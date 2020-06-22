@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -24,10 +25,8 @@ public class SqlTracker implements Store {
      */
     private static final String DELETE_QUERY =
             "DELETE FROM items AS i WHERE i" + ".id = ?;";
-    private static final String ADD_BY_NAME_QUERY =
-            "INSERT INTO items(name) " + "VALUES(?);";
     private static final String ADD_QUERY =
-            "INSERT INTO items " + "VALUES(?, ?);";
+            "INSERT INTO items(name) " + "VALUES(?);";
     private static final String FIND_BY_ID_QUERY =
             "SELECT * FROM items AS i" + " WHERE i.id = ?;";
     private static final String FIND_BY_NAME_QUERY =
@@ -87,17 +86,9 @@ public class SqlTracker implements Store {
 
     @Override
     public boolean add(Item item) {
-        PreparedStatement statement;
         boolean result = false;
-        try {
-            if (item.getId() == null) {
-                statement = cn.prepareStatement(ADD_BY_NAME_QUERY);
-                statement.setString(1, item.getName());
-            } else {
-                statement = cn.prepareStatement(ADD_QUERY);
-                statement.setInt(1, Integer.parseInt(item.getId()));
-                statement.setString(2, item.getName());
-            }
+        try (PreparedStatement statement = cn.prepareStatement(ADD_QUERY)) {
+            statement.setString(1, item.getName());
             result = 0 > statement.executeUpdate();
         } catch (Exception e) {
             LOG.error("add item fell down", e);
@@ -107,10 +98,8 @@ public class SqlTracker implements Store {
 
     @Override
     public boolean replace(String id, Item item) {
-        PreparedStatement statement;
         boolean result = false;
-        try {
-            statement = cn.prepareStatement(REPLACE_QUERY);
+        try (PreparedStatement statement = cn.prepareStatement(REPLACE_QUERY)) {
             statement.setString(1, item.getName());
             statement.setInt(2, Integer.parseInt(id));
             result = 0 < statement.executeUpdate();
@@ -122,10 +111,8 @@ public class SqlTracker implements Store {
 
     @Override
     public boolean delete(String id) {
-        PreparedStatement statement;
         boolean result = false;
-        try {
-            statement = cn.prepareStatement(DELETE_QUERY);
+        try (PreparedStatement statement = cn.prepareStatement(DELETE_QUERY)) {
             statement.setInt(1, Integer.parseInt(id));
             result = 0 < statement.executeUpdate();
         } catch (Exception e) {
@@ -136,11 +123,9 @@ public class SqlTracker implements Store {
 
     @Override
     public List<Item> findAll() {
-        PreparedStatement statement;
         List<Item> resultList = new ArrayList<>();
-        try {
-            statement = cn.prepareStatement(FIND_ALL_QUERY);
-            var rs = statement.executeQuery();
+        try (PreparedStatement statement = cn.prepareStatement(FIND_ALL_QUERY);
+             ResultSet rs = statement.executeQuery()) {
             while (rs.next()) {
                 resultList.add(
                         parseItem(rs.getInt("id"), rs.getString("name")));
@@ -153,15 +138,15 @@ public class SqlTracker implements Store {
 
     @Override
     public List<Item> findByName(String key) {
-        PreparedStatement statement;
         List<Item> resultList = new ArrayList<>();
-        try {
-            statement = cn.prepareStatement(FIND_BY_NAME_QUERY);
+        try (PreparedStatement statement = cn.prepareStatement(
+                FIND_BY_NAME_QUERY)) {
             statement.setString(1, key);
-            var rs = statement.executeQuery();
-            while (rs.next()) {
-                resultList.add(
-                        parseItem(rs.getInt("id"), rs.getString("name")));
+            try (ResultSet rs = statement.executeQuery()) {
+                while (rs.next()) {
+                    resultList.add(
+                            parseItem(rs.getInt("id"), rs.getString("name")));
+                }
             }
         } catch (Exception e) {
             LOG.error("findByName item fell down", e);
@@ -171,14 +156,14 @@ public class SqlTracker implements Store {
 
     @Override
     public Item findById(String id) {
-        PreparedStatement statement;
         Item result = null;
-        try {
-            statement = cn.prepareStatement(FIND_BY_ID_QUERY);
+        try (PreparedStatement statement = cn.prepareStatement(
+                FIND_BY_ID_QUERY)) {
             statement.setInt(1, Integer.parseInt(id));
-            var rs = statement.executeQuery();
-            if (rs.next()) {
-                result = parseItem(rs.getInt("id"), rs.getString("name"));
+            try (ResultSet rs = statement.executeQuery()) {
+                if (rs.next()) {
+                    result = parseItem(rs.getInt("id"), rs.getString("name"));
+                }
             }
         } catch (Exception e) {
             LOG.error("replace item fell down", e);
