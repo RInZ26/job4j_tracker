@@ -1,43 +1,41 @@
 package ru.job4j.tracker;
 
-
 /**
- * Класс модель данных - заявка
- *
- * @author RinZ26
- */
+ Класс модель данных - заявка
+
+ @author RinZ26 */
 public class Item {
     /**
-     * id
+     id
      */
     private String id;
     /**
-     * Название
+     Название
      */
     private String name;
 
     public Item(String name) {
-	this.name = name;
+        this.name = name;
     }
 
     public String getId() {
-	return id;
+        return id;
     }
 
     public void setId(String id) {
-	this.id = id;
+        this.id = id;
     }
 
     public String getName() {
-	return name;
+        return name;
     }
 
     public void setName(String name) {
-	this.name = name;
+        this.name = name;
     }
 
     @Override
     public String toString() {
-	return "id = '" + id + '\'' + ", name = '" + name + '\'';
+        return "id = '" + id + '\'' + ", name = '" + name + '\'';
     }
 }
