@@ -4,24 +4,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
 public class SqlTracker implements Store {
     /**
-     Логгер
+     * Логгер
      */
     private static final Logger LOG = LoggerFactory.getLogger(
             SqlTracker.class.getName());
 
     /**
-     Чтобы не плодить строки каждый раз при вызове метода, лучше их все сюда
-     (а-ля Хорстман стр 262) вынести
+     * Чтобы не плодить строки каждый раз при вызове метода, лучше их все сюда
+     * (а-ля Хорстман стр 262) вынести
      */
     private static final String DELETE_QUERY =
             "DELETE FROM items AS i WHERE i" + ".id = ?;";
@@ -30,27 +27,37 @@ public class SqlTracker implements Store {
     private static final String FIND_BY_ID_QUERY =
             "SELECT * FROM items AS i" + " WHERE i.id = ?;";
     private static final String FIND_BY_NAME_QUERY =
-            "SELECT * FROM items AS" + " i WHERE i.name = ? ORDER BY i.id "
-                    + "DESC;";
+            "SELECT * FROM items AS" + " i WHERE i.name = ?;";
     private static final String FIND_ALL_QUERY = "SELECT * FROM items AS i;";
     private static final String REPLACE_QUERY =
             "UPDATE items SET name = ? " + "WHERE id = ?;";
 
     /**
-     Наш коннекшен к ДБ
+     * Наш коннекшен к ДБ
      */
     private Connection cn;
 
-    public static void main(String[] args) {
-        SqlTracker sqlTracker = new SqlTracker();
-        sqlTracker.init();
-        System.out.println(sqlTracker.findByName("Nastya"));
-        Item item = new Item("Nastya");
-        System.out.println(sqlTracker.add(item).getId());
+    /**
+     * Так как мы из БД забираем просто поля, то нам нужно их как-то
+     * аггрегировать.
+     * В старой версии item есть только 1 конструктор, поэтому придётся
+     * использовать конструктор с name, а id уже через сеттер ставить
+     *
+     * @param id
+     *         - поле id Item'a
+     * @param name
+     *         - ~ name ~
+     *
+     * @return item из бд
+     */
+    public static Item parseItem(int id, String name) {
+        Item item = new Item(name);
+        item.setId(String.valueOf(id));
+        return item;
     }
 
     /**
-     Инициализация подключения к СУБД
+     * Инициализация подключения к СУБД
      */
     public void init() {
         try (InputStream in = SqlTracker.class.getClassLoader()
@@ -75,21 +82,25 @@ public class SqlTracker implements Store {
     }
 
     /**
-     Возвращается (теоретически) именно то id, которое проставила бд (хотя
-     вообще нет конечно, если был парралельный запрос), в if 0 < ~ проверяется,
-     что запрос вообще был
-     выполнен - иначе нет смысла идти дальше. Если выполняется, то находим
-     через findByName item с максимальным id (findByName работает с Order).
+     * Добавление заявки в бд с возвращением сгенерированного в бд id
+     * посредством getGeneratedKeys
+     * @return заявка с именем переданного параметра item и уже новым id из бд
      */
     @Override
     public Item add(Item item) {
         Item result = null;
-        try (PreparedStatement addStatement = cn.prepareStatement(ADD_QUERY)) {
-            addStatement.setString(1, item.getName());
-            if (0 < addStatement.executeUpdate()) {
-                List<Item> items = findByName(item.getName());
-                if (items.size() > 0) {
-                    result = items.get(0);
+        try (PreparedStatement st = cn.prepareStatement(ADD_QUERY,
+                                                        PreparedStatement.RETURN_GENERATED_KEYS)) {
+            st.setString(1, item.getName());
+            if (0 < st.executeUpdate()) {
+                try (ResultSet generatedKeys = st.getGeneratedKeys()) {
+                    result = new Item(item.getName());
+                    if (generatedKeys.next()) {
+                        result.setId(
+                                String.valueOf(generatedKeys.getInt("id")));
+                    }
+                } catch (SQLException sqle) {
+                    LOG.error("Generated keys in add fell down", sqle);
                 }
             }
         } catch (Exception e) {
@@ -171,24 +182,5 @@ public class SqlTracker implements Store {
             LOG.error("replace item fell down", e);
         }
         return result;
-    }
-
-    /**
-     Так как мы из БД забираем просто поля, то нам нужно их как-то
-     аггрегировать.
-     В старой версии item есть только 1 конструктор, поэтому придётся
-     использовать конструктор с name, а id уже через сеттер ставить
-
-     @param id
-     - поле id Item'a
-     @param name
-     - ~ name ~
-
-     @return item из бд
-     */
-    public static Item parseItem(int id, String name) {
-        Item item = new Item(name);
-        item.setId(String.valueOf(id));
-        return item;
     }
 }
