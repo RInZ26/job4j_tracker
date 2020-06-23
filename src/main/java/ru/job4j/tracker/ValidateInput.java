@@ -1,9 +1,10 @@
 package ru.job4j.tracker;
 
 /**
- Класс для обеспечения проверок ConsoleInput
-
- @author RinZ26 */
+ * Класс для обеспечения проверок ConsoleInput
+ *
+ * @author RinZ26
+ */
 public class ValidateInput implements Input {
     private final Input input;
 
@@ -12,12 +13,12 @@ public class ValidateInput implements Input {
     }
 
     /**
-     Аналог Scanner.nextLine()
-
-     @param question
-     строка перед запросом ввода от пользовалея
-
-     @return пользовательская строка
+     * Аналог Scanner.nextLine()
+     *
+     * @param question
+     *         строка перед запросом ввода от пользовалея
+     *
+     * @return пользовательская строка
      */
     @Override
     public String askStr(String question) {

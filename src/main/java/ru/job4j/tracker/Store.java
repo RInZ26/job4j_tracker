@@ -3,7 +3,7 @@ package ru.job4j.tracker;
 import java.util.List;
 
 /**
- Наша прослойка (между чем и чем?) для SqlTracker
+ * Наша прослойка (между чем и чем?) для SqlTracker
  */
 public interface Store extends AutoCloseable {
     void init();

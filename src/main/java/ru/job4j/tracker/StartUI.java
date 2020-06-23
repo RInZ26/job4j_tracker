@@ -4,9 +4,10 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- Класс - консольное приложенеие для работы с  Tracker
-
- @author RinZ26 */
+ * Класс - консольное приложенеие для работы с  Tracker
+ *
+ * @author RinZ26
+ */
 public class StartUI {
 
     public static void main(String[] args) {
@@ -24,12 +25,12 @@ public class StartUI {
     }
 
     /**
-     Инициализируем работу UI
-
-     @param input
-     отвечает за ввод данных
-     @param tracker
-     коллекция заявок
+     * Инициализируем работу UI
+     *
+     * @param input
+     *         отвечает за ввод данных
+     * @param tracker
+     *         коллекция заявок
      */
     public void init(Input input, Store tracker, List<UserAction> userActions) {
         boolean run = true;
@@ -41,7 +42,7 @@ public class StartUI {
     }
 
     /**
-     Вывод меню на экран
+     * Вывод меню на экран
      */
     public void showMenu(List<UserAction> userActions) {
         int indexOfMenu = 0;

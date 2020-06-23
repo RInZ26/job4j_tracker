@@ -1,9 +1,10 @@
 package ru.job4j.tracker;
 
 /**
- Класс для тестирования StartUI
-
- @author RinZ26 */
+ * Класс для тестирования StartUI
+ *
+ * @author RinZ26
+ */
 public class StubInput implements Input {
     private String[] answers;
     private int position = 0;
@@ -13,15 +14,15 @@ public class StubInput implements Input {
     }
 
     /**
-     Перегруженный метод, для проверки, что мы не вышли за предел доступных
-     значений
-
-     @param question
-     ~
-     @param max
-     ~
-
-     @return ~
+     * Перегруженный метод, для проверки, что мы не вышли за предел доступных
+     * значений
+     *
+     * @param question
+     *         ~
+     * @param max
+     *         ~
+     *
+     * @return ~
      */
     @Override
     public int askInt(String question, int max) {

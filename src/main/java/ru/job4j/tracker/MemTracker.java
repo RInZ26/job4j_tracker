@@ -6,24 +6,25 @@ import java.util.List;
 import java.util.Random;
 
 /**
- Класс обертка над массива - храналище заявок
-
- @author RinZ26 */
+ * Класс обертка над массива - храналище заявок
+ *
+ * @author RinZ26
+ */
 public class MemTracker {
     /**
-     Анти Null, константа пустой заявки
+     * Анти Null, константа пустой заявки
      */
     public static final Item EMPTY_ITEM = new Item("empty_item");
     /**
-     Список для хранения заявок
+     * Список для хранения заявок
      */
     private List<Item> items = new ArrayList();
 
     /**
-     Добавление в список
-
-     @param item
-     добавляемая заявка
+     * Добавление в список
+     *
+     * @param item
+     *         добавляемая заявка
      */
     public void add(Item item) {
         item.setId(generateId());
@@ -31,9 +32,9 @@ public class MemTracker {
     }
 
     /**
-     Метод для создания Item.id на основе текущей даты и ГСЧ
-
-     @return полученный id
+     * Метод для создания Item.id на основе текущей даты и ГСЧ
+     *
+     * @return полученный id
      */
     private String generateId() {
         Random rnd = new Random();
@@ -41,21 +42,21 @@ public class MemTracker {
     }
 
     /**
-     Просто возвращаем список, по сути геттер
-
-     @return список без null
+     * Просто возвращаем список, по сути геттер
+     *
+     * @return список без null
      */
     public List<Item> findAll() {
         return items;
     }
 
     /**
-     Возвращает список, элементы Item.name == key
-
-     @param key
-     ключ
-
-     @return отфильттрованный список
+     * Возвращает список, элементы Item.name == key
+     *
+     * @param key
+     *         ключ
+     *
+     * @return отфильттрованный список
      */
     public List<Item> findByName(String key) {
         List<Item> result = new ArrayList<>();
@@ -68,12 +69,12 @@ public class MemTracker {
     }
 
     /**
-     Поиск элемента по id
-
-     @param id
-     id
-
-     @return элемент есть ? элемент : Tracker.EMPTY_ITEM
+     * Поиск элемента по id
+     *
+     * @param id
+     *         id
+     *
+     * @return элемент есть ? элемент : Tracker.EMPTY_ITEM
      */
     public Item findById(String id) {
         Item result = EMPTY_ITEM;
@@ -87,14 +88,14 @@ public class MemTracker {
     }
 
     /**
-     Замена ячеек по id
-
-     @param id
-     id ячейки, которой меняем
-     @param item
-     заявка, на которую меняем
-
-     @return id есть ? поменяли true : false
+     * Замена ячеек по id
+     *
+     * @param id
+     *         id ячейки, которой меняем
+     * @param item
+     *         заявка, на которую меняем
+     *
+     * @return id есть ? поменяли true : false
      */
     public boolean replace(String id, Item item) {
         boolean result = false;
@@ -109,10 +110,10 @@ public class MemTracker {
     }
 
     /**
-     Удаление элемента
-
-     @param id
-     id удаляемоего элемента
+     * Удаление элемента
+     *
+     * @param id
+     *         id удаляемоего элемента
      */
     public boolean delete(String id) {
         boolean result = false;

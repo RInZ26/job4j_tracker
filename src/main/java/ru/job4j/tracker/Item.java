@@ -1,16 +1,17 @@
 package ru.job4j.tracker;
 
 /**
- Класс модель данных - заявка
-
- @author RinZ26 */
+ * Класс модель данных - заявка
+ *
+ * @author RinZ26
+ */
 public class Item {
     /**
-     id
+     * id
      */
     private String id;
     /**
-     Название
+     * Название
      */
     private String name;
 
