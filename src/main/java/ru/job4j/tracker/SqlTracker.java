@@ -30,7 +30,8 @@ public class SqlTracker implements Store {
     private static final String FIND_BY_ID_QUERY =
             "SELECT * FROM items AS i" + " WHERE i.id = ?;";
     private static final String FIND_BY_NAME_QUERY =
-            "SELECT * FROM items AS" + " i WHERE i.name = ?;";
+            "SELECT * FROM items AS" + " i WHERE i.name = ? ORDER BY i.id "
+                    + "DESC;";
     private static final String FIND_ALL_QUERY = "SELECT * FROM items AS i;";
     private static final String REPLACE_QUERY =
             "UPDATE items SET name = ? " + "WHERE id = ?;";
@@ -40,23 +41,12 @@ public class SqlTracker implements Store {
      */
     private Connection cn;
 
-    /**
-     Так как мы из БД забираем просто поля, то нам нужно их как-то
-     аггрегировать.
-     В старой версии item есть только 1 конструктор, поэтому придётся
-     использовать конструктор с name, а id уже через сеттер ставить
-
-     @param id
-     - поле id Item'a
-     @param name
-     - ~ name ~
-
-     @return item из бд
-     */
-    public static Item parseItem(int id, String name) {
-        Item item = new Item(name);
-        item.setId(String.valueOf(id));
-        return item;
+    public static void main(String[] args) {
+        SqlTracker sqlTracker = new SqlTracker();
+        sqlTracker.init();
+        System.out.println(sqlTracker.findByName("Nastya"));
+        Item item = new Item("Nastya");
+        System.out.println(sqlTracker.add(item).getId());
     }
 
     /**
@@ -84,12 +74,24 @@ public class SqlTracker implements Store {
         }
     }
 
+    /**
+     Возвращается (теоретически) именно то id, которое проставила бд (хотя
+     вообще нет конечно, если был парралельный запрос), в if 0 < ~ проверяется,
+     что запрос вообще был
+     выполнен - иначе нет смысла идти дальше. Если выполняется, то находим
+     через findByName item с максимальным id (findByName работает с Order).
+     */
     @Override
-    public boolean add(Item item) {
-        boolean result = false;
-        try (PreparedStatement statement = cn.prepareStatement(ADD_QUERY)) {
-            statement.setString(1, item.getName());
-            result = 0 > statement.executeUpdate();
+    public Item add(Item item) {
+        Item result = null;
+        try (PreparedStatement addStatement = cn.prepareStatement(ADD_QUERY)) {
+            addStatement.setString(1, item.getName());
+            if (0 < addStatement.executeUpdate()) {
+                List<Item> items = findByName(item.getName());
+                if (items.size() > 0) {
+                    result = items.get(0);
+                }
+            }
         } catch (Exception e) {
             LOG.error("add item fell down", e);
         }
@@ -169,5 +171,24 @@ public class SqlTracker implements Store {
             LOG.error("replace item fell down", e);
         }
         return result;
+    }
+
+    /**
+     Так как мы из БД забираем просто поля, то нам нужно их как-то
+     аггрегировать.
+     В старой версии item есть только 1 конструктор, поэтому придётся
+     использовать конструктор с name, а id уже через сеттер ставить
+
+     @param id
+     - поле id Item'a
+     @param name
+     - ~ name ~
+
+     @return item из бд
+     */
+    public static Item parseItem(int id, String name) {
+        Item item = new Item(name);
+        item.setId(String.valueOf(id));
+        return item;
     }
 }

@@ -8,8 +8,10 @@ import java.util.List;
 public interface Store extends AutoCloseable {
     void init();
 
-    //TODO поменяли возвращаемый тип Item -> boolean
-    boolean add(Item item);
+    /*Вернул Item обратно, т.к. после добавления  вбд, где у нас и
+    // проставляется id - будет хорошей идеей получить эту заявку с
+    // проставленным oid*/
+    Item add(Item item);
 
     boolean replace(String id, Item item);
 
