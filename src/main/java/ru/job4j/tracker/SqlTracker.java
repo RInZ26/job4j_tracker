@@ -38,6 +38,17 @@ public class SqlTracker implements Store {
     private Connection cn;
 
     /**
+     * "Всё-таки я верю, что TrackerSql это замаскированный SqlTracker"
+     * Как я понимаю, мы здесь будем получать Connection через
+     * ConnectionRollback, а местный init просто не будем использовать
+     *
+     * @param connection подготовленный коннекшен
+     */
+    public SqlTracker(Connection connection) {
+        this.cn = connection;
+    }
+
+    /**
      * Так как мы из БД забираем просто поля, то нам нужно их как-то
      * аггрегировать.
      * В старой версии item есть только 1 конструктор, поэтому придётся
@@ -84,6 +95,7 @@ public class SqlTracker implements Store {
     /**
      * Добавление заявки в бд с возвращением сгенерированного в бд id
      * посредством getGeneratedKeys
+     *
      * @return заявка с именем переданного параметра item и уже новым id из бд
      */
     @Override

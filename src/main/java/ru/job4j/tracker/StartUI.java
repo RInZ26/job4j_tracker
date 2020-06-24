@@ -13,7 +13,7 @@ public class StartUI {
     public static void main(String[] args) {
         Input validateInput = new ValidateInput(new ConsoleInput());
         StartUI testUI = new StartUI();
-        Store tracker = new SqlTracker();
+        Store tracker = new SqlTracker(null); //FIXME
         List<UserAction> userActions = Arrays.asList(new CreateAction(),
                                                      new FindAllAction(),
                                                      new EditAction(),
