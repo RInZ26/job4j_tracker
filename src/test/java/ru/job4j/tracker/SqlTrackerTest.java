@@ -83,7 +83,7 @@ public class SqlTrackerTest {
     }
 
     @Test
-    public void FindByIdActionMockTest() {
+    public void findByIdActionMockTest() {
         UserAction findAction = new FindItemsByIdAction();
         Store store = new MemTracker();
 
@@ -97,7 +97,7 @@ public class SqlTrackerTest {
     }
 
     @Test
-    public void FindByNameActionActionMockTest() {
+    public void findByNameActionActionMockTest() {
         UserAction findAction = new FindItemsByKeyAction();
         Store store = new MemTracker();
         Item item = new Item("willBeFound2");
