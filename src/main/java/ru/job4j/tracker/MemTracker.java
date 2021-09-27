@@ -10,7 +10,7 @@ import java.util.Random;
  *
  * @author RinZ26
  */
-public class MemTracker {
+public class MemTracker implements Store {
     /**
      * Анти Null, константа пустой заявки
      */
@@ -23,12 +23,15 @@ public class MemTracker {
     /**
      * Добавление в список
      *
-     * @param item
-     *         добавляемая заявка
+     * @param item добавляемая заявка
+     * @return Новый объект Item с проставленным id
      */
-    public void add(Item item) {
-        item.setId(generateId());
-        items.add(item);
+    public Item add(Item item) {
+        Item result = new Item(item.getName());
+
+        result.setId(generateId());
+        items.add(result);
+        return result;
     }
 
     /**
@@ -53,9 +56,7 @@ public class MemTracker {
     /**
      * Возвращает список, элементы Item.name == key
      *
-     * @param key
-     *         ключ
-     *
+     * @param key ключ
      * @return отфильттрованный список
      */
     public List<Item> findByName(String key) {
@@ -71,9 +72,7 @@ public class MemTracker {
     /**
      * Поиск элемента по id
      *
-     * @param id
-     *         id
-     *
+     * @param id id
      * @return элемент есть ? элемент : Tracker.EMPTY_ITEM
      */
     public Item findById(String id) {
@@ -90,11 +89,8 @@ public class MemTracker {
     /**
      * Замена ячеек по id
      *
-     * @param id
-     *         id ячейки, которой меняем
-     * @param item
-     *         заявка, на которую меняем
-     *
+     * @param id   id ячейки, которой меняем
+     * @param item заявка, на которую меняем
      * @return id есть ? поменяли true : false
      */
     public boolean replace(String id, Item item) {
@@ -112,8 +108,7 @@ public class MemTracker {
     /**
      * Удаление элемента
      *
-     * @param id
-     *         id удаляемоего элемента
+     * @param id id удаляемоего элемента
      */
     public boolean delete(String id) {
         boolean result = false;
@@ -125,5 +120,14 @@ public class MemTracker {
             }
         }
         return result;
+    }
+
+
+    @Override
+    public void init() {
+    }
+
+    @Override
+    public void close() throws Exception {
     }
 }
