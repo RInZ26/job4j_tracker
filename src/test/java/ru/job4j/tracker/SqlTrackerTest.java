@@ -64,7 +64,6 @@ public class SqlTrackerTest {
         }
     }
 
-    //mock tests
     @Test
     public void deleteItemMockTest() {
         UserAction deleteAction = new DeleteAction();

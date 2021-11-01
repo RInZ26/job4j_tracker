@@ -29,9 +29,6 @@ public class FindItemsByIdAction implements UserAction {
     public boolean execute(Input input, Store tracker) {
         Integer id = input.askInt("Enter the item's id ");
         Item item = tracker.findById(id);
-        /*System.out.println(item == Store.EMPTY_ITEM ?
-        "The item with this id doesn't exist" : item);*/
-        // ну это конечно бред, но очень узкое поведение у MemTracker'a с антиnull заглушкой
         return Objects.nonNull(item) && !item.equals(MemTracker.EMPTY_ITEM);
     }
 }
