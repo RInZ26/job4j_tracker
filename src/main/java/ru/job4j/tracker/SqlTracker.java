@@ -71,6 +71,7 @@ public class SqlTracker implements Store {
     /**
      * Инициализация подключения к СУБД
      */
+    @Override
     public void init() {
         try (InputStream in = SqlTracker.class.getClassLoader()
                                               .getResourceAsStream(
