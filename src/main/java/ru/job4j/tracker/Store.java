@@ -13,13 +13,13 @@ public interface Store extends AutoCloseable {
     // проставленным oid*/
     Item add(Item item);
 
-    boolean replace(String id, Item item);
+    boolean replace(Integer id, Item item);
 
-    boolean delete(String id);
+    boolean delete(Integer id);
 
     List<Item> findAll();
 
     List<Item> findByName(String key);
 
-    Item findById(String id);
+    Item findById(Integer id);
 }

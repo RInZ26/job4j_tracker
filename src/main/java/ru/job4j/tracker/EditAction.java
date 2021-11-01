@@ -26,7 +26,7 @@ public class EditAction implements UserAction {
      */
     @Override
     public boolean execute(Input input, Store tracker) {
-        String id = input.askStr("Enter the item's id ");
+        Integer id =  input.askInt("Enter the item's id ");
         String newItemName = input.askStr(
                 System.lineSeparator() + "Enter new name for this item ");
         System.out.println(System.lineSeparator() + "Operation result is "

@@ -15,6 +15,11 @@ public class MemTracker implements Store {
      * Анти Null, константа пустой заявки
      */
     public static final Item EMPTY_ITEM = new Item("empty_item");
+
+    static {
+        EMPTY_ITEM.setId(0);
+    }
+
     /**
      * Список для хранения заявок
      */
@@ -26,6 +31,7 @@ public class MemTracker implements Store {
      * @param item добавляемая заявка
      * @return Новый объект Item с проставленным id
      */
+    @Override
     public Item add(Item item) {
         Item result = new Item(item.getName());
 
@@ -39,9 +45,9 @@ public class MemTracker implements Store {
      *
      * @return полученный id
      */
-    private String generateId() {
+    private Integer generateId() {
         Random rnd = new Random();
-        return String.valueOf(rnd.nextLong() + System.currentTimeMillis());
+        return rnd.nextInt();
     }
 
     /**
@@ -49,6 +55,7 @@ public class MemTracker implements Store {
      *
      * @return список без null
      */
+    @Override
     public List<Item> findAll() {
         return items;
     }
@@ -59,6 +66,7 @@ public class MemTracker implements Store {
      * @param key ключ
      * @return отфильттрованный список
      */
+    @Override
     public List<Item> findByName(String key) {
         List<Item> result = new ArrayList<>();
         for (Item item : items) {
@@ -75,7 +83,8 @@ public class MemTracker implements Store {
      * @param id id
      * @return элемент есть ? элемент : Tracker.EMPTY_ITEM
      */
-    public Item findById(String id) {
+    @Override
+    public Item findById(Integer id) {
         Item result = EMPTY_ITEM;
         for (Item item : items) {
             if (item.getId().equals(id)) {
@@ -93,7 +102,8 @@ public class MemTracker implements Store {
      * @param item заявка, на которую меняем
      * @return id есть ? поменяли true : false
      */
-    public boolean replace(String id, Item item) {
+    @Override
+    public boolean replace(Integer id, Item item) {
         boolean result = false;
         for (int i = 0; i < items.size(); i++) {
             if (items.get(i).getId().equals(id)) {
@@ -110,7 +120,8 @@ public class MemTracker implements Store {
      *
      * @param id id удаляемоего элемента
      */
-    public boolean delete(String id) {
+    @Override
+    public boolean delete(Integer id) {
         boolean result = false;
         for (int c = 0; c < items.size(); c++) {
             if (items.get(c).getId().equals(id)) {

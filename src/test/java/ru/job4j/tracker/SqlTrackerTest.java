@@ -56,7 +56,7 @@ public class SqlTrackerTest {
     public void replaceItem() throws Exception {
         try (SqlTracker tracker = new SqlTracker(
                 ConnectionRollback.create(this.init()))) {
-            String id;
+            Integer id;
             tracker.replace(id = tracker.add(new Item(nastya)).getId(),
                     new Item(katya));
             assertThat(tracker.findByName(nastya).size(), is(0));
@@ -70,12 +70,14 @@ public class SqlTrackerTest {
         UserAction deleteAction = new DeleteAction();
 
         Item item = new Item("willBeDeleted");
+        item.setId(0);
 
         Input mockedInput = mock(Input.class);
-        when(mockedInput.askStr(anyString())).thenReturn(item.getId());
 
         Store store = new MemTracker();
         item = store.add(item);
+
+        when(mockedInput.askInt(anyString())).thenReturn(item.getId());
 
         assertThat(store.findById(item.getId()), is(item));
         deleteAction.execute(mockedInput, store);
@@ -88,10 +90,11 @@ public class SqlTrackerTest {
         Store store = new MemTracker();
 
         Item item = new Item("willBeDeFound");
+        item.setId(0);
         item = store.add(item);
 
         Input mockedInput = mock(Input.class);
-        when(mockedInput.askStr(anyString())).thenReturn(item.getId());
+        when(mockedInput.askInt(anyString())).thenReturn(item.getId());
 
         assertTrue(findAction.execute(mockedInput, store));
     }

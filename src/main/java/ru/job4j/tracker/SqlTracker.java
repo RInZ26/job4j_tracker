@@ -63,7 +63,7 @@ public class SqlTracker implements Store {
      */
     public static Item parseItem(int id, String name) {
         Item item = new Item(name);
-        item.setId(String.valueOf(id));
+        item.setId(id);
         return item;
     }
 
@@ -109,7 +109,7 @@ public class SqlTracker implements Store {
                     result = new Item(item.getName());
                     if (generatedKeys.next()) {
                         result.setId(
-                                String.valueOf(generatedKeys.getInt("id")));
+                              generatedKeys.getInt("id"));
                     }
                 } catch (SQLException sqle) {
                     LOG.error("Generated keys in add fell down", sqle);
@@ -122,11 +122,11 @@ public class SqlTracker implements Store {
     }
 
     @Override
-    public boolean replace(String id, Item item) {
+    public boolean replace(Integer id, Item item) {
         boolean result = false;
         try (PreparedStatement statement = cn.prepareStatement(REPLACE_QUERY)) {
             statement.setString(1, item.getName());
-            statement.setInt(2, Integer.parseInt(id));
+            statement.setInt(2, id);
             result = 0 < statement.executeUpdate();
         } catch (Exception e) {
             LOG.error("replace item fell down", e);
@@ -135,10 +135,10 @@ public class SqlTracker implements Store {
     }
 
     @Override
-    public boolean delete(String id) {
+    public boolean delete(Integer id) {
         boolean result = false;
         try (PreparedStatement statement = cn.prepareStatement(DELETE_QUERY)) {
-            statement.setInt(1, Integer.parseInt(id));
+            statement.setInt(1, id);
             result = 0 < statement.executeUpdate();
         } catch (Exception e) {
             LOG.error("delete item fell down", e);
@@ -180,11 +180,11 @@ public class SqlTracker implements Store {
     }
 
     @Override
-    public Item findById(String id) {
+    public Item findById(Integer id) {
         Item result = null;
         try (PreparedStatement statement = cn.prepareStatement(
                 FIND_BY_ID_QUERY)) {
-            statement.setInt(1, Integer.parseInt(id));
+            statement.setInt(1, id);
             try (ResultSet rs = statement.executeQuery()) {
                 if (rs.next()) {
                     result = parseItem(rs.getInt("id"), rs.getString("name"));
