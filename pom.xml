@@ -17,7 +17,7 @@
             <properties>
                 <db.url>jdbc:postgresql://localhost/tracker</db.url>
                 <db.username>postgres</db.username>
-                <db.password></db.password>
+                <db.password>1503</db.password>
                 <db.driver>org.postgresql.Driver</db.driver>
             </properties>
         </profile>
@@ -26,7 +26,7 @@
             <properties>
                 <db.url>jdbc:postgresql://127.0.0.1:5432/tracker</db.url>
                 <db.username>postgres</db.username>
-                <db.password>1polk1polk</db.password>
+                <db.password>1503</db.password>
                 <db.driver>org.postgresql.Driver</db.driver>
             </properties>
         </profile>
@@ -35,7 +35,7 @@
             <properties>
                 <db.url>jdbc:postgresql://127.0.0.1:5432/tracker</db.url>
                 <db.username>postgres</db.username>
-                <db.password>1polk1polk</db.password>
+                <db.password>1503</db.password>
                 <db.driver>org.postgresql.Driver</db.driver>
             </properties>
         </profile>
@@ -91,7 +91,7 @@
                     <changeLogFile>${basedir}/db/master.xml</changeLogFile>
                     <url>jdbc:postgresql://127.0.0.1:5432/tracker</url>
                     <username>postgres</username>
-                    <password>1polk1polk</password>
+                    <password>1503</password>
                     <driver>org.postgresql.Driver</driver>
                 </configuration>
                 <executions>
@@ -150,6 +150,17 @@
             <artifactId>junit-jupiter</artifactId>
             <version>RELEASE</version>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>5.4.15.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.2.12</version>
         </dependency>
     </dependencies>
 </project>
