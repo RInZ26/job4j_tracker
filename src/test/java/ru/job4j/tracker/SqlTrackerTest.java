@@ -1,5 +1,8 @@
 package ru.job4j.tracker;
 
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import ru.job4j.connection.ConnectionRollback;
 import ru.job4j.tracker.entity.Item;
@@ -7,6 +10,8 @@ import ru.job4j.tracker.entity.Item;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Properties;
 
 import static org.junit.Assert.*;
@@ -17,52 +22,76 @@ import static org.mockito.Mockito.when;
 import static ru.job4j.tracker.MemTracker.EMPTY_ITEM;
 
 public class SqlTrackerTest {
+    private static Connection connection;
+
     private String nastya = "NastyaCh";
     private String katya = "Katya";
 
-    public Connection init() {
-        try (InputStream in = SqlTracker.class.getClassLoader()
-                .getResourceAsStream(
-                        "app.properties")) {
+    @BeforeClass
+    public static void initConnection() {
+        try (InputStream in = SqlTrackerTest.class.getClassLoader()
+                .getResourceAsStream("test.properties")) {
             Properties config = new Properties();
             config.load(in);
             Class.forName(config.getProperty("driver-class-name"));
-            return DriverManager.getConnection(config.getProperty("url"),
+            connection = DriverManager.getConnection(
+                    config.getProperty("url"),
                     config.getProperty("username"),
-                    config.getProperty("password"));
+                    config.getProperty("password")
+
+            );
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
     }
 
+    @AfterClass
+    public static void closeConnection() throws SQLException {
+        connection.close();
+    }
+
+    @After
+    public void wipeTable() throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement("delete from items")) {
+            statement.execute();
+        }
+    }
+
+    @Test
+    public void whenSaveItemAndFindByGeneratedIdThenMustBeTheSame() {
+        SqlTracker tracker = new SqlTracker(connection);
+        Item item = new Item("item");
+        item = tracker.add(item);
+        assertThat(tracker.findById(item.getId()), is(item));
+    }
+
     @Test
     public void createItem() throws Exception {
-        try (SqlTracker tracker = new SqlTracker(
-                ConnectionRollback.create(this.init()))) {
+    SqlTracker tracker = new SqlTracker(
+               connection);
             tracker.add(new Item(nastya));
             assertThat(tracker.findByName(nastya).size(), is(1));
-        }
+
     }
 
     @Test
     public void deleteItem() throws Exception {
-        try (SqlTracker tracker = new SqlTracker(
-                ConnectionRollback.create(this.init()))) {
+   SqlTracker tracker = new SqlTracker(
+                connection);
             tracker.delete(tracker.add(new Item(nastya)).getId());
             assertThat(tracker.findByName(nastya).size(), is(0));
-        }
+
     }
 
     @Test
     public void replaceItem() throws Exception {
-        try (SqlTracker tracker = new SqlTracker(
-                ConnectionRollback.create(this.init()))) {
+       SqlTracker tracker = new SqlTracker(connection);
             Integer id;
             tracker.replace(id = tracker.add(new Item(nastya)).getId(),
                     new Item(katya));
             assertThat(tracker.findByName(nastya).size(), is(0));
             assertThat(tracker.findByName(katya).get(0).getId(), is(id));
-        }
+
     }
 
     @Test
@@ -112,4 +141,5 @@ public class SqlTrackerTest {
         store.add(item);
         assertTrue(findAction.execute(mockedInput, store));
     }
+
 }

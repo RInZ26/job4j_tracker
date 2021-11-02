@@ -1,4 +1,6 @@
-create table items (
-   id serial primary key not null,
-   name varchar(2000)
+create table if not exists items (
+    id serial primary key,
+    name text,
+    description text,
+    created timestamp
 );

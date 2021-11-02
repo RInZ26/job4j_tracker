@@ -10,25 +10,16 @@
 
     <profiles>
         <profile>
-            <id>travis</id>
+            <id>test</id>
+            <properties>
+                <db.url>jdbc:h2:${basedir}/testdb;MODE=PostgreSQL;CASE_INSENSITIVE_IDENTIFIERS=TRUE;</db.url>
+                <db.username></db.username>
+                <db.password></db.password>
+                <db.driver>org.h2.Driver</db.driver>
+            </properties>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
-            <properties>
-                <db.url>jdbc:postgresql://localhost/tracker</db.url>
-                <db.username>postgres</db.username>
-                <db.password>1503</db.password>
-                <db.driver>org.postgresql.Driver</db.driver>
-            </properties>
-        </profile>
-        <profile>
-            <id>test</id>
-            <properties>
-                <db.url>jdbc:postgresql://127.0.0.1:5432/tracker</db.url>
-                <db.username>postgres</db.username>
-                <db.password>1503</db.password>
-                <db.driver>org.postgresql.Driver</db.driver>
-            </properties>
         </profile>
         <profile>
             <id>production</id>
@@ -89,15 +80,17 @@
                 <version>3.6.2</version>
                 <configuration>
                     <changeLogFile>${basedir}/db/master.xml</changeLogFile>
-                    <url>jdbc:postgresql://127.0.0.1:5432/tracker</url>
-                    <username>postgres</username>
-                    <password>1503</password>
-                    <driver>org.postgresql.Driver</driver>
+                    <url>${db.url}</url>
+                    <driver>${db.driver}</driver>
+                    <username>${db.username}</username>
+                    <password>${db.password}</password>
+                    <promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
                 </configuration>
                 <executions>
                     <execution>
                         <phase>process-resources</phase>
                         <goals>
+                            <goal>clearCheckSums</goal>
                             <goal>update</goal>
                         </goals>
                     </execution>
@@ -112,11 +105,6 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>42.2.13</version>
-        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -161,6 +149,13 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>42.2.12</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.200</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
