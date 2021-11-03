@@ -31,37 +31,36 @@ public class HbmTracker implements Store, AutoCloseable {
 
     @Override
     public boolean replace(Integer id, Item item) {
-        boolean result = true;
+        boolean result;
         try (Session session = sf.openSession()) {
             session.beginTransaction();
-            session.update(item);
+            int rowsWereAffected = session.createQuery("UPDATE Item SET description = :description,"
+                            + " created = :created, " + "name = :name WHERE id = :id ")
+                    .setParameter("id", id)
+                    .setParameter("description", item.getDescription())
+                    .setParameter("created", item.getCreated())
+                    .setParameter("name", item.getName()).executeUpdate();
             session.getTransaction().commit();
-        } catch (Exception e) {
-            result = false;
+
+            result = rowsWereAffected > 0;
         }
         return result;
     }
 
     /**
-     * Интересный "хак" с удалением по id, когда мы вместо доп. запроса findById просто
-     * делаем фейк заявку и удаляем её
-     *
-     * @param id
-     * @return
+     * Здесь и в replace запрос был изменено на HSQL, чтобы ловить количество проапдейченных строк.
+     * Тем самым становится понятно, выполнился запрос или нет
      */
     @Override
     public boolean delete(Integer id) {
-        boolean result = true;
+        boolean result;
         try (Session session = sf.openSession()) {
             session.beginTransaction();
-
-            Item item = new Item(null);
-            item.setId(id);
-            session.delete(item);
-
+            int rowsWereAffected = session.createQuery("DELETE from Item WHERE id = :id")
+                    .setParameter("id", id).executeUpdate();
             session.getTransaction().commit();
-        } catch (Exception e) {
-            result = false;
+
+            result = rowsWereAffected > 0;
         }
         return result;
     }
@@ -85,7 +84,6 @@ public class HbmTracker implements Store, AutoCloseable {
             result = session.createQuery("from ru.job4j.tracker.entity.Item "
                     + "where name = :name ").setParameter("name", key).list();
             session.getTransaction().commit();
-            session.close();
         }
         return result;
     }
@@ -97,7 +95,6 @@ public class HbmTracker implements Store, AutoCloseable {
             session.beginTransaction();
             result = session.get(Item.class, id);
             session.getTransaction().commit();
-            session.close();
         }
         return result;
     }
