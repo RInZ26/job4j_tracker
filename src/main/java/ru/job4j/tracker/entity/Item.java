@@ -24,8 +24,14 @@ public class Item {
      */
     private String name;
 
+    /**
+     * Описание
+     */
     private String description;
 
+    /**
+     * Время создания
+     */
     private Timestamp created;
 
     public Item() {
