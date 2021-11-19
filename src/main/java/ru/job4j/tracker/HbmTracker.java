@@ -10,10 +10,20 @@ import ru.job4j.tracker.entity.Item;
 import java.util.List;
 
 public class HbmTracker implements Store, AutoCloseable {
+
+    private static HbmTracker INSTANCE = new HbmTracker();
+
     private final StandardServiceRegistry registry = new StandardServiceRegistryBuilder()
             .configure().build();
     private final SessionFactory sf = new MetadataSources(registry)
             .buildMetadata().buildSessionFactory();
+
+    public static Store getInstance() {
+        return INSTANCE;
+    }
+
+    private HbmTracker() {
+    }
 
     @Override
     public void init() {
@@ -39,7 +49,8 @@ public class HbmTracker implements Store, AutoCloseable {
                     .setParameter("id", id)
                     .setParameter("description", item.getDescription())
                     .setParameter("created", item.getCreated())
-                    .setParameter("name", item.getName()).executeUpdate();
+                    .setParameter("name", item.getName())
+                    .executeUpdate();
             session.getTransaction().commit();
 
             result = rowsWereAffected > 0;
@@ -70,7 +81,7 @@ public class HbmTracker implements Store, AutoCloseable {
         List<Item> result;
         try (Session session = sf.openSession()) {
             session.beginTransaction();
-            result = session.createQuery("from ru.job4j.tracker.entity.Item").list();
+            result = session.createQuery("from Item").list();
             session.getTransaction().commit();
         }
         return result;
@@ -81,7 +92,7 @@ public class HbmTracker implements Store, AutoCloseable {
         List<Item> result;
         try (Session session = sf.openSession()) {
             session.beginTransaction();
-            result = session.createQuery("from ru.job4j.tracker.entity.Item "
+            result = session.createQuery("from Item "
                     + "where name = :name ").setParameter("name", key).list();
             session.getTransaction().commit();
         }
@@ -100,7 +111,8 @@ public class HbmTracker implements Store, AutoCloseable {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close()
+            throws Exception {
         StandardServiceRegistryBuilder.destroy(registry);
     }
 }
