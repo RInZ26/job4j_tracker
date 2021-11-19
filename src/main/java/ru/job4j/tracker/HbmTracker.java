@@ -11,18 +11,18 @@ import java.util.List;
 
 public class HbmTracker implements Store, AutoCloseable {
 
-    private static HbmTracker INSTANCE = new HbmTracker();
+    private static final HbmTracker INSTANCE = new HbmTracker();
 
     private final StandardServiceRegistry registry = new StandardServiceRegistryBuilder()
             .configure().build();
     private final SessionFactory sf = new MetadataSources(registry)
             .buildMetadata().buildSessionFactory();
 
-    public static Store getInstance() {
-        return INSTANCE;
+    private HbmTracker() {
     }
 
-    private HbmTracker() {
+    public static Store getInstance() {
+        return INSTANCE;
     }
 
     @Override
